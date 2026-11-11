@@ -43,6 +43,199 @@
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
 
+  /* ---------- Interactive ARFI monitor (toy model) ----------
+     Displacement plateau is proportional to acoustic power. At push-on the
+     trace overshoots briefly and settles; at push-off it relaxes back to zero. */
+  (() => {
+    const hud = document.getElementById('hud');
+    const svg = document.getElementById('hudSvg');
+    const focusG = document.getElementById('focusG');
+    const lesion = document.getElementById('lesion');
+    const beams = [...document.querySelectorAll('#beams line')];
+    const powerEl = document.getElementById('power');
+    const fireBtn = document.getElementById('fire');
+    const stateEl = document.querySelector('#hudState b');
+    const roPower = document.getElementById('roPower');
+    const roDisp = document.getElementById('roDisp');
+    const hint = document.getElementById('hudHint');
+    const trace = document.getElementById('trace');
+    const tctx = trace.getContext('2d');
+
+    const UM_PER_W = 0.1;       // plateau displacement per watt
+    const Y_MAX = 120;          // µm, top of the chart
+    const WINDOW_S = 10;        // seconds of history shown
+    const MAX_PUSH_S = 6;       // a manual sonication stops by itself
+    const BASE = { x: 200, y: 120 };
+
+    let power = Number(powerEl.value);
+    let pushing = false, pushT = 0, disp = 0, dose = 0;
+    let focus = { ...BASE };
+    let history = [];           // { t, d, on }
+    let now = 0, last = 0, running = false, userTookOver = false;
+
+    // --- focus steering ---
+    function setFocus(x, y) {
+      // keep the focus inside the tissue contour
+      const dx = (x - 200) / 118, dy = (y - 124) / 62;
+      const r = Math.hypot(dx, dy);
+      if (r > 1) { x = 200 + (dx / r) * 118; y = 124 + (dy / r) * 62; }
+      if (Math.hypot(x - focus.x, y - focus.y) > 14) dose = 0; // new spot, fresh lesion
+      focus = { x, y };
+      focusG.setAttribute('transform', `translate(${(x - BASE.x).toFixed(1)} ${(y - BASE.y).toFixed(1)})`);
+      beams.forEach((l) => { l.setAttribute('x2', x.toFixed(1)); l.setAttribute('y2', y.toFixed(1)); });
+    }
+    function pointerToSvg(e) {
+      const r = svg.getBoundingClientRect();
+      return [((e.clientX - r.left) / r.width) * 400, ((e.clientY - r.top) / r.height) * 330];
+    }
+    svg.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return; // touch scrolls the page; tap steers instead
+      setFocus(...pointerToSvg(e));
+      hint.textContent = '';
+      wake();
+    });
+    svg.addEventListener('click', (e) => { setFocus(...pointerToSvg(e)); hint.textContent = ''; wake(); });
+
+    // --- controls ---
+    function setPower(p) {
+      power = p;
+      powerEl.value = p;
+      roPower.textContent = p + ' W';
+      hud.style.setProperty('--ring-scale', (1.6 + (p / 800) * 3.4).toFixed(2));
+      hud.style.setProperty('--beam-alpha', (0.25 + (p / 800) * 0.65).toFixed(2));
+    }
+    function setPushing(on) {
+      pushing = on;
+      if (on) pushT = 0;
+      hud.classList.toggle('pushing', on);
+      fireBtn.setAttribute('aria-pressed', String(on));
+      fireBtn.textContent = on ? 'Stop' : 'Sonicate';
+      stateEl.textContent = on ? 'PUSH ON' : 'STANDBY';
+      wake();
+    }
+    powerEl.addEventListener('input', () => { userTookOver = true; setPower(Number(powerEl.value)); wake(); });
+    fireBtn.addEventListener('click', () => { userTookOver = true; setPushing(!pushing); });
+
+    // --- auto demo until the visitor takes over: three powers, three plateaus ---
+    const demo = [200, 400, 600];
+    let demoStep = 0, demoT = 0;
+    function runDemo(dt) {
+      demoT += dt;
+      if (!pushing && demoT > 1.6) { setPower(demo[demoStep % demo.length]); demoStep++; setPushing(true); demoT = 0; }
+      else if (pushing && demoT > 2.6) { setPushing(false); demoT = 0; }
+    }
+
+    // --- model ---
+    function step(dt) {
+      if (!userTookOver && !reduceMotion) runDemo(dt);
+      let target = 0, tau = 0.3;
+      if (pushing) {
+        pushT += dt;
+        if (userTookOver && pushT > MAX_PUSH_S) setPushing(false);
+        target = power * UM_PER_W * (1 + 0.4 * Math.exp(-pushT / 0.9));
+        tau = 0.09;
+        dose += power * dt;
+      }
+      disp += (target - disp) * (1 - Math.exp(-dt / tau));
+      const noisy = Math.max(0, disp + (Math.random() - 0.5) * (0.6 + disp * 0.025));
+      history.push({ t: now, d: noisy, on: pushing });
+      while (history.length && history[0].t < now - WINDOW_S) history.shift();
+      roDisp.textContent = Math.round(noisy) + ' µm';
+      const grow = Math.min(6, dose / 700);
+      lesion.setAttribute('rx', (7 + grow * 0.6).toFixed(1));
+      lesion.setAttribute('ry', (12 + grow).toFixed(1));
+    }
+
+    // --- chart ---
+    function sizeTrace() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      trace.width = Math.round(trace.clientWidth * dpr);
+      trace.height = Math.round(96 * dpr);
+      tctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function drawTrace() {
+      const W = trace.clientWidth, H = 96, padL = 26, padB = 8, padT = 6;
+      const plotW = W - padL, plotH = H - padB - padT;
+      const X = (t) => padL + ((t - (now - WINDOW_S)) / WINDOW_S) * plotW;
+      const Y = (d) => padT + plotH - (Math.min(d, Y_MAX) / Y_MAX) * plotH;
+      tctx.clearRect(0, 0, W, H);
+      tctx.font = '9px "JetBrains Mono", monospace';
+      tctx.textBaseline = 'middle';
+      for (const v of [0, 40, 80, 120]) {
+        tctx.strokeStyle = 'rgba(77,227,200,.12)';
+        tctx.beginPath(); tctx.moveTo(padL, Y(v)); tctx.lineTo(W, Y(v)); tctx.stroke();
+        tctx.fillStyle = '#8ba39d';
+        tctx.fillText(String(v), 2, Y(v));
+      }
+      // push-on periods as a copper band along the time axis
+      tctx.fillStyle = 'rgba(224,168,74,.75)';
+      let start = null;
+      history.forEach((h, i) => {
+        if (h.on && start === null) start = h.t;
+        if (start !== null && (!h.on || i === history.length - 1)) {
+          tctx.fillRect(X(start), H - 5, Math.max(1, X(h.t) - X(start)), 3);
+          start = null;
+        }
+      });
+      // expected plateau for the selected power
+      tctx.strokeStyle = 'rgba(224,168,74,.55)';
+      tctx.setLineDash([4, 4]);
+      tctx.beginPath(); tctx.moveTo(padL, Y(power * UM_PER_W)); tctx.lineTo(W, Y(power * UM_PER_W)); tctx.stroke();
+      tctx.setLineDash([]);
+      // the trace
+      if (history.length > 1) {
+        tctx.strokeStyle = '#4de3c8';
+        tctx.lineWidth = 1.8;
+        tctx.lineJoin = 'round';
+        tctx.beginPath();
+        history.forEach((h, i) => (i ? tctx.lineTo(X(h.t), Y(h.d)) : tctx.moveTo(X(h.t), Y(h.d))));
+        tctx.stroke();
+        tctx.lineWidth = 1;
+      }
+    }
+
+    // --- loop: runs while visible; under reduced motion only while something is happening ---
+    let visible = true;
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }).observe(hud);
+    function frame(ts) {
+      const dt = Math.min(0.05, (ts - last) / 1000 || 0.016);
+      last = ts; now += dt;
+      step(dt);
+      drawTrace();
+      const idle = reduceMotion && !pushing && disp < 0.3;
+      if (visible && !idle && !document.hidden) requestAnimationFrame(frame);
+      else running = false;
+    }
+    function wake() {
+      if (running) return;
+      running = true; last = performance.now();
+      requestAnimationFrame(frame);
+    }
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) wake(); });
+    window.addEventListener('resize', () => { sizeTrace(); drawTrace(); });
+
+    setPower(power);
+    sizeTrace();
+    drawTrace();
+    wake();
+  })();
+
+  /* ---------- Image lightbox ---------- */
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxCap = document.getElementById('lightboxCap');
+  document.querySelectorAll('.shot').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      lightboxImg.src = btn.dataset.full;
+      lightboxImg.alt = btn.querySelector('img').alt;
+      lightboxCap.textContent = btn.dataset.caption || '';
+      lightbox.showModal();
+    });
+  });
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox || e.target.classList.contains('lightbox-close')) lightbox.close();
+  });
+
   /* ---------- Contact form (Web3Forms) ---------- */
   const form = document.getElementById('contactForm');
   const statusEl = document.getElementById('contactStatus');

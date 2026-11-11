@@ -56,13 +56,14 @@
         </div>
 
         <!-- AR-style viewport: focused ultrasound + ARFI readout (decorative) -->
-        <div class="hud" aria-hidden="true">
+        <div class="hud" id="hud">
           <span class="hud-corner tl"></span><span class="hud-corner tr"></span>
           <span class="hud-corner bl"></span><span class="hud-corner br"></span>
           <div class="hud-bar">
-            <span>MR-HIFU · ARFI MONITOR</span><span class="hud-rec"><i></i> LIVE</span>
+            <span>MR-HIFU · ARFI MONITOR</span>
+            <span class="hud-rec" id="hudState"><i></i> <b>STANDBY</b></span>
           </div>
-          <svg viewBox="0 0 400 330" class="hud-svg">
+          <svg viewBox="0 0 400 330" class="hud-svg" id="hudSvg" aria-hidden="true">
             <defs>
               <radialGradient id="tissue" cx="50%" cy="38%" r="60%">
                 <stop offset="0" stop-color="#4de3c8" stop-opacity=".16"/>
@@ -76,8 +77,8 @@
             <ellipse cx="200" cy="120" rx="170" ry="100" fill="url(#tissue)"/>
             <!-- tissue contour -->
             <path d="M52 132c4-58 62-96 148-96s146 40 148 96c2 50-60 84-148 84S48 184 52 132z" fill="none" stroke="#4de3c8" stroke-opacity=".35" stroke-width="1.2" stroke-dasharray="3 5"/>
-            <!-- beams from transducer to focus -->
-            <g class="beams" stroke="#e0a84a" stroke-width="1" stroke-opacity=".55">
+            <!-- beams from transducer to focus (end points follow the focus) -->
+            <g class="beams" id="beams" stroke="#e0a84a" stroke-width="1">
               <line x1="110" y1="296" x2="200" y2="120"/>
               <line x1="140" y1="304" x2="200" y2="120"/>
               <line x1="170" y1="309" x2="200" y2="120"/>
@@ -89,26 +90,42 @@
             <!-- transducer -->
             <path d="M96 290q104 44 208 0" fill="none" stroke="#e0a84a" stroke-width="5" stroke-linecap="round"/>
             <path d="M88 300q112 50 224 0" fill="none" stroke="#e0a84a" stroke-opacity=".35" stroke-width="1.5"/>
-            <!-- focus / lesion -->
-            <circle class="ring r1" cx="200" cy="120" r="12"/>
-            <circle class="ring r2" cx="200" cy="120" r="12"/>
-            <circle class="ring r3" cx="200" cy="120" r="12"/>
-            <ellipse cx="200" cy="120" rx="7" ry="12" fill="#4de3c8" fill-opacity=".85"/>
-            <!-- reticle -->
-            <g stroke="#4de3c8" stroke-width="1.2" fill="none">
-              <path d="M170 120h-16M230 120h16M200 90V76M200 150v14"/>
-              <path d="M176 96v-6h6M224 96v-6h-6M176 144v6h6M224 144v6h-6"/>
+            <!-- focus: moves with the pointer -->
+            <g id="focusG">
+              <circle class="ring r1" cx="200" cy="120" r="12"/>
+              <circle class="ring r2" cx="200" cy="120" r="12"/>
+              <circle class="ring r3" cx="200" cy="120" r="12"/>
+              <ellipse id="lesion" cx="200" cy="120" rx="7" ry="12" fill="#4de3c8" fill-opacity=".85"/>
+              <g stroke="#4de3c8" stroke-width="1.2" fill="none">
+                <path d="M170 120h-16M230 120h16M200 90V76M200 150v14"/>
+                <path d="M176 96v-6h6M224 96v-6h-6M176 144v6h6M224 144v6h-6"/>
+              </g>
             </g>
-            <path d="M212 110l40-34h46" fill="none" stroke="#4de3c8" stroke-opacity=".7" stroke-width="1"/>
-            <text x="254" y="70" class="svg-label">FOCUS · LESION</text>
             <text x="14" y="22" class="svg-label dim">AX · SLICE</text>
+            <text x="386" y="22" text-anchor="end" class="svg-label dim" id="hudHint">MOVE OR TAP TO STEER</text>
           </svg>
-          <div class="hud-wave">
-            <span class="hud-wave-label">ARFI displacement</span>
-            <svg viewBox="0 0 400 46" preserveAspectRatio="none">
-              <path class="wave" d="M0 30h60l10-4 10 6 12-22 12 30 10-14 12 6h54l10-4 10 6 12-24 12 32 10-14 12 6h54l10-4 10 6 12-20 12 28 10-12 12 4h12" fill="none" stroke="#4de3c8" stroke-width="1.6" stroke-linejoin="round"/>
-            </svg>
+
+          <div class="hud-readouts">
+            <div><span>POWER</span><b id="roPower">200 W</b></div>
+            <div><span>DISPL.</span><b id="roDisp" class="sig">0 µm</b></div>
           </div>
+
+          <div class="hud-wave">
+            <div class="hud-wave-head">
+              <span class="hud-wave-label">FOCAL DISPLACEMENT (µm)</span>
+              <span class="hud-wave-label">TIME →</span>
+            </div>
+            <canvas id="trace" height="96" aria-hidden="true"></canvas>
+          </div>
+
+          <div class="hud-controls">
+            <label class="hud-power">
+              <span>Acoustic power</span>
+              <input type="range" id="power" min="50" max="800" step="50" value="200" aria-describedby="hudNote">
+            </label>
+            <button type="button" class="hud-fire" id="fire" aria-pressed="false">Sonicate</button>
+          </div>
+          <p class="hud-note" id="hudNote">Toy model: raise the power and the displacement plateau rises with it.</p>
         </div>
       </div>
       <a class="scroll-hint" href="#about" aria-label="Scroll to about"><span></span></a>
@@ -304,6 +321,82 @@
         <header class="sec-head reveal">
           <span class="sec-no">04</span><h2>Projects</h2><span class="sec-trace"></span>
         </header>
+        <h3 class="sub-head reveal">Research software · Uniklinik Köln</h3>
+
+        <article class="feature reveal">
+          <div class="feature-media">
+            <div class="shot-placeholder"><span>Screenshot coming soon</span></div>
+          </div>
+          <div class="feature-body">
+            <span class="ic-id">R1 · MR-ARFI</span>
+            <h3>Real-time feedback for MR-HIFU histotripsy</h3>
+            <p>
+              Monitoring histotripsy with MR acoustic radiation force imaging. Displacement and PRFS
+              temperature are measured from the same GRE-EPI phase images using alternating
+              motion-encoding gradients, and the histotripsy pulse itself serves as the ARFI push.
+            </p>
+            <ul class="feature-list">
+              <li>Python processing pipeline from DICOM to displacement and temperature maps, focal curves and summary figures.</li>
+              <li><strong>ARFI Studio</strong>: a desktop GUI to compare scans before and after therapy and replay a sonication the way a live system would see it.</li>
+              <li>Experiments in gel phantoms and ex vivo tissue across a range of acoustic powers.</li>
+            </ul>
+            <ul class="chips"><li>Python</li><li>MR-ARFI</li><li>PRFS thermometry</li><li>GRE-EPI</li><li>GUI</li></ul>
+          </div>
+        </article>
+
+        <article class="feature flip reveal">
+          <div class="feature-media">
+            <div class="flow" role="img" aria-label="Data flow: the MRI scanner streams images to the processing stage, which feeds the live views, the recorder and the controller; the controller steers the HIFU system.">
+              <div class="flow-node">Philips MRI<small>live magnitude + phase</small></div>
+              <span class="flow-arrow"></span>
+              <div class="flow-node hot">Processing<small>temperature · ARFI displacement</small></div>
+              <span class="flow-arrow"></span>
+              <div class="flow-split">
+                <div class="flow-node">Live views<small>maps · focal curves</small></div>
+                <div class="flow-node">Controller<small>model-predictive</small></div>
+                <div class="flow-node">Recorder<small>HDF5 · NIfTI</small></div>
+              </div>
+              <span class="flow-arrow"></span>
+              <div class="flow-node copper">Sonalleve HIFU<small>sonication protocols</small></div>
+            </div>
+          </div>
+          <div class="feature-body">
+            <span class="ic-id">R2 · THERAPY CONTROL</span>
+            <h3>MRHIFU: MR-guided HIFU therapy software</h3>
+            <p>
+              A PyQt5 application for preclinical MR-guided HIFU on a Philips MRI with a Sonalleve
+              system. It reads images live from the scanner, turns them into temperature and
+              displacement maps, and steers the transducer.
+            </p>
+            <ul class="feature-list">
+              <li><strong>Hyperthermia</strong>: live PRF thermometry with drift correction and model-predictive temperature control.</li>
+              <li><strong>Histotripsy</strong>: a Setup → Planning → Therapy → Review workflow with MR-ARFI monitoring during pulsed sonications.</li>
+            </ul>
+            <ul class="chips"><li>Python</li><li>PyQt5</li><li>PRF thermometry</li><li>MPC</li><li>Real-time</li></ul>
+          </div>
+        </article>
+
+        <article class="feature reveal">
+          <div class="feature-media">
+            <div class="shot-placeholder"><span>Screenshot coming soon</span></div>
+          </div>
+          <div class="feature-body">
+            <span class="ic-id">R3 · SIMULATION</span>
+            <h3>arfisim: MR-ARFI simulation toolbox</h3>
+            <p>
+              Simulates the MR-ARFI experiments end to end in Python: acoustic field, radiation
+              force, viscoelastic tissue displacement and MR motion encoding, ending in a synthetic
+              scan that runs through the same processing pipeline as the real data.
+            </p>
+            <ul class="feature-list">
+              <li>Linear and nonlinear acoustics, heating and thermal dose, and finite samples.</li>
+              <li>Used to compare measured displacements with what the physics predicts.</li>
+            </ul>
+            <ul class="chips"><li>Python</li><li>Acoustics</li><li>Viscoelastic model</li><li>Simulation</li></ul>
+          </div>
+        </article>
+
+        <h3 class="sub-head reveal">Earlier projects</h3>
         <div class="ic-grid">
           <article class="ic reveal">
             <span class="ic-id">U1 · MED</span>
@@ -447,6 +540,12 @@
       </div>
     </section>
   </main>
+
+  <dialog class="lightbox" id="lightbox" aria-label="Image viewer">
+    <button class="lightbox-close" type="button" aria-label="Close">×</button>
+    <img id="lightboxImg" alt="">
+    <p id="lightboxCap"></p>
+  </dialog>
 
   <footer class="footer">
     <span>© <span id="year"></span> Guruprasad Hebbar Puthila</span>
