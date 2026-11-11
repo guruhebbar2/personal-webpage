@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guruprasad Hebbar Puthila — Medical Imaging &amp; Software</title>
+  <meta name="description" content="Guruprasad Hebbar Puthila — research assistant and software developer working on MR-HIFU histotripsy, ARFI lesion monitoring and medical image analysis software.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23081110'/%3E%3Cpath d='M6 16h6l3-7 4 14 3-7h4' fill='none' stroke='%234de3c8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav" id="nav">
+    <a class="brand" href="#top" aria-label="Home">
+      <span class="brand-chip">GH</span>
+      <span class="brand-text">guruprasad<span class="dim">.hebbar</span></span>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav id="navLinks" class="nav-links" aria-label="Sections">
+      <a href="#about">About</a>
+      <a href="#focus">Focus</a>
+      <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
+      <a href="#skills">Skills</a>
+      <a href="#education">Education</a>
+      <a href="#contact" class="nav-cta">Contact</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- ================= HERO ================= -->
+    <section class="hero" id="top">
+      <canvas id="pcb" aria-hidden="true"></canvas>
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="led"></span> SYSTEM ONLINE · COLOGNE / AACHEN, DE</p>
+          <h1>Guruprasad<br><span class="accent">Hebbar Puthila</span></h1>
+          <p class="term" aria-label="Roles">
+            <span class="prompt">&gt;</span> <span id="typed"></span><span class="caret" aria-hidden="true"></span>
+          </p>
+          <p class="lede">
+            Electronics engineer turned medical-imaging developer. I build software and
+            AI tools for image analysis, and research real-time monitoring of
+            <strong>MR-HIFU histotripsy</strong> lesions using <strong>ARFI</strong>.
+          </p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#experience">View experience</a>
+            <a class="btn ghost" href="#contact">Get in touch</a>
+          </div>
+        </div>
+
+        <!-- AR-style viewport: focused ultrasound + ARFI readout (decorative) -->
+        <div class="hud" aria-hidden="true">
+          <span class="hud-corner tl"></span><span class="hud-corner tr"></span>
+          <span class="hud-corner bl"></span><span class="hud-corner br"></span>
+          <div class="hud-bar">
+            <span>MR-HIFU · ARFI MONITOR</span><span class="hud-rec"><i></i> LIVE</span>
+          </div>
+          <svg viewBox="0 0 400 330" class="hud-svg">
+            <defs>
+              <radialGradient id="tissue" cx="50%" cy="38%" r="60%">
+                <stop offset="0" stop-color="#4de3c8" stop-opacity=".16"/>
+                <stop offset="1" stop-color="#4de3c8" stop-opacity="0"/>
+              </radialGradient>
+              <pattern id="gridp" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M20 0H0V20" fill="none" stroke="#4de3c8" stroke-opacity=".09" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="400" height="330" fill="url(#gridp)"/>
+            <ellipse cx="200" cy="120" rx="170" ry="100" fill="url(#tissue)"/>
+            <!-- tissue contour -->
+            <path d="M52 132c4-58 62-96 148-96s146 40 148 96c2 50-60 84-148 84S48 184 52 132z" fill="none" stroke="#4de3c8" stroke-opacity=".35" stroke-width="1.2" stroke-dasharray="3 5"/>
+            <!-- beams from transducer to focus -->
+            <g class="beams" stroke="#e0a84a" stroke-width="1" stroke-opacity=".55">
+              <line x1="110" y1="296" x2="200" y2="120"/>
+              <line x1="140" y1="304" x2="200" y2="120"/>
+              <line x1="170" y1="309" x2="200" y2="120"/>
+              <line x1="200" y1="311" x2="200" y2="120"/>
+              <line x1="230" y1="309" x2="200" y2="120"/>
+              <line x1="260" y1="304" x2="200" y2="120"/>
+              <line x1="290" y1="296" x2="200" y2="120"/>
+            </g>
+            <!-- transducer -->
+            <path d="M96 290q104 44 208 0" fill="none" stroke="#e0a84a" stroke-width="5" stroke-linecap="round"/>
+            <path d="M88 300q112 50 224 0" fill="none" stroke="#e0a84a" stroke-opacity=".35" stroke-width="1.5"/>
+            <!-- focus / lesion -->
+            <circle class="ring r1" cx="200" cy="120" r="12"/>
+            <circle class="ring r2" cx="200" cy="120" r="12"/>
+            <circle class="ring r3" cx="200" cy="120" r="12"/>
+            <ellipse cx="200" cy="120" rx="7" ry="12" fill="#4de3c8" fill-opacity=".85"/>
+            <!-- reticle -->
+            <g stroke="#4de3c8" stroke-width="1.2" fill="none">
+              <path d="M170 120h-16M230 120h16M200 90V76M200 150v14"/>
+              <path d="M176 96v-6h6M224 96v-6h-6M176 144v6h6M224 144v6h-6"/>
+            </g>
+            <path d="M212 110l40-34h46" fill="none" stroke="#4de3c8" stroke-opacity=".7" stroke-width="1"/>
+            <text x="254" y="70" class="svg-label">FOCUS · LESION</text>
+            <text x="14" y="22" class="svg-label dim">AX · SLICE</text>
+          </svg>
+          <div class="hud-wave">
+            <span class="hud-wave-label">ARFI displacement</span>
+            <svg viewBox="0 0 400 46" preserveAspectRatio="none">
+              <path class="wave" d="M0 30h60l10-4 10 6 12-22 12 30 10-14 12 6h54l10-4 10 6 12-24 12 32 10-14 12 6h54l10-4 10 6 12-20 12 28 10-12 12 4h12" fill="none" stroke="#4de3c8" stroke-width="1.6" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <a class="scroll-hint" href="#about" aria-label="Scroll to about"><span></span></a>
+    </section>
+
+    <!-- ================= ABOUT ================= -->
+    <section class="section" id="about">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <span class="sec-no">01</span><h2>About</h2><span class="sec-trace"></span>
+        </header>
+        <div class="about-grid">
+          <div class="reveal">
+            <p class="big">
+              I work where <span class="accent">hardware, imaging physics and software</span> meet.
+            </p>
+            <p>
+              I studied Electronics and Communication Engineering in Bangalore and completed my
+              M.Sc. in Electrical Engineering, Information Technology and Computer Engineering at
+              RWTH Aachen University, with a focus on computer vision and medical image analysis.
+            </p>
+            <p>
+              Since August 2023 I split my time between the University Hospital Cologne, where I
+              research MR-guided HIFU histotripsy and real-time lesion monitoring with ARFI, and
+              Gremse-IT in Aachen, where I develop the Imalytics image analysis software and its AI tools.
+              Before that I spent several years as a backend developer building cloud microservices.
+            </p>
+          </div>
+          <ul class="stats reveal" aria-label="At a glance">
+            <li><span class="stat-k">Now</span><span class="stat-v">Uniklinik Köln<br>Gremse-IT, Aachen</span></li>
+            <li><span class="stat-k">Domain</span><span class="stat-v">Medical image analysis<br>MR-HIFU · ARFI</span></li>
+            <li><span class="stat-k">Stack</span><span class="stat-v">Python · C++ · Java<br>Deep learning · Docker</span></li>
+            <li><span class="stat-k">Languages</span><span class="stat-v">English (C1)<br>German (A2/B1)</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FOCUS ================= -->
+    <section class="section alt" id="focus">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <span class="sec-no">02</span><h2>Current focus</h2><span class="sec-trace"></span>
+        </header>
+        <div class="focus-grid">
+          <article class="panel reveal">
+            <span class="hud-corner tl"></span><span class="hud-corner br"></span>
+            <div class="panel-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 38q16 8 32 0"/><path d="M12 36L24 14M24 38V14M36 36L24 14" stroke-opacity=".6"/><circle cx="24" cy="14" r="4" fill="currentColor" stroke="none"/><circle cx="24" cy="14" r="8" stroke-opacity=".5"/></svg>
+            </div>
+            <p class="tag-line">Research · Uniklinik Köln</p>
+            <h3>MR-HIFU histotripsy</h3>
+            <p>
+              Research on histotripsy with MR-guided high-intensity focused ultrasound: non-invasive,
+              mechanical tissue ablation steered and observed inside the MR scanner.
+            </p>
+            <ul class="chips"><li>MR-HIFU</li><li>Histotripsy</li><li>Focused ultrasound</li></ul>
+          </article>
+
+          <article class="panel reveal">
+            <span class="hud-corner tl"></span><span class="hud-corner br"></span>
+            <div class="panel-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 28h8l3-6 5 16 5-26 5 22 3-6h11"/><path d="M4 42h40" stroke-opacity=".4"/></svg>
+            </div>
+            <p class="tag-line">Research · Uniklinik Köln</p>
+            <h3>ARFI lesion monitoring</h3>
+            <p>
+              Using acoustic radiation force impulse (ARFI) imaging to monitor histotripsy lesions
+              in real time, so treatment progress can be seen while it happens.
+            </p>
+            <ul class="chips"><li>ARFI</li><li>Real-time monitoring</li><li>MR imaging</li></ul>
+          </article>
+
+          <article class="panel reveal">
+            <span class="hud-corner tl"></span><span class="hud-corner br"></span>
+            <div class="panel-icon">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="12" width="24" height="24" rx="3"/><path d="M18 4v8M24 4v8M30 4v8M18 36v8M24 36v8M30 36v8M4 18h8M4 24h8M4 30h8M36 18h8M36 24h8M36 30h8" stroke-opacity=".6"/><path d="M19 27l3-6 3 6 4-8"/></svg>
+            </div>
+            <p class="tag-line">Software · Gremse-IT</p>
+            <h3>Imalytics &amp; AI tools</h3>
+            <p>
+              Developing the Imalytics image analysis software and the AI tool that ships with it:
+              bringing deep-learning models into software researchers use every day.
+            </p>
+            <ul class="chips"><li>Imalytics</li><li>Deep learning</li><li>Image analysis</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= EXPERIENCE ================= -->
+    <section class="section" id="experience">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <span class="sec-no">03</span><h2>Experience</h2><span class="sec-trace"></span>
+        </header>
+
+        <ol class="timeline">
+          <li class="tl-item reveal current">
+            <div class="tl-date">08.2023 – Present</div>
+            <div class="tl-body">
+              <h3>Research Assistant</h3>
+              <p class="org">Uniklinik Köln (University Hospital Cologne) · Cologne, Germany</p>
+              <ul>
+                <li>Research on MR-HIFU histotripsy applications.</li>
+                <li>ARFI-based real-time monitoring of histotripsy lesions.</li>
+              </ul>
+              <ul class="chips"><li>MR-HIFU</li><li>Histotripsy</li><li>ARFI</li></ul>
+            </div>
+          </li>
+
+          <li class="tl-item reveal current">
+            <div class="tl-date">08.2023 – Present</div>
+            <div class="tl-body">
+              <h3>Programmer</h3>
+              <p class="org">Gremse-IT GmbH · Aachen, Germany</p>
+              <ul>
+                <li>Development of the Imalytics image analysis software.</li>
+                <li>Development of the AI tool that accompanies Imalytics.</li>
+              </ul>
+              <ul class="chips"><li>Imalytics</li><li>AI</li><li>Medical image analysis</li></ul>
+            </div>
+          </li>
+
+          <li class="tl-item reveal">
+            <div class="tl-date">09.2022 – 2023</div>
+            <div class="tl-body">
+              <h3>Master Thesis</h3>
+              <p class="org">Institute of Imaging and Computer Vision (LFB), RWTH Aachen · Aachen, Germany</p>
+              <p class="thesis">“Empirical and deep learning-based feature extraction for applications in whole-slide image classification and Pathomics”</p>
+              <ul>
+                <li>Scientific analysis of feature extraction, feature selection and visualization strategies in histopathology.</li>
+                <li>Classical feature extraction with PyRadiomics; deep feature extraction with VGG, ResNet and DenseNet121; analysis of feature fusion.</li>
+                <li>Trend analysis, statistical tests and training of classical neural networks for classification on fused features.</li>
+                <li>Evaluation of CycleGAN-based stain translation experiments.</li>
+              </ul>
+              <ul class="chips"><li>Pathomics</li><li>PyRadiomics</li><li>DenseNet121</li><li>CycleGAN</li></ul>
+            </div>
+          </li>
+
+          <li class="tl-item reveal">
+            <div class="tl-date">03.2020 – 2023</div>
+            <div class="tl-body">
+              <h3>Scientific Research Assistant</h3>
+              <p class="org">RWTH E.ON Energy Research Center · Aachen, Germany</p>
+              <ul>
+                <li>Maintained cloud security for HVAC systems research platforms.</li>
+                <li>Authentication, authorization and accounting (AAA) with Keycloak and Kong API Gateway, with Traefik and nginx as reverse proxies.</li>
+                <li>Custom Kong API Gateway plugins in Lua for advanced security and RBAC of FIWARE components.</li>
+                <li>Research applications in Python, Go and JavaScript, with data visualization in Dash.</li>
+                <li>Linux-based containerization and deployment with Docker.</li>
+              </ul>
+              <ul class="chips"><li>Keycloak</li><li>Kong</li><li>Lua</li><li>Go</li><li>Docker</li></ul>
+            </div>
+          </li>
+
+          <li class="tl-item reveal">
+            <div class="tl-date">04.2021 – 10.2021</div>
+            <div class="tl-body">
+              <h3>Intern</h3>
+              <p class="org">Bosch Healthcare Solutions GmbH · Stuttgart, Germany</p>
+              <ul>
+                <li>Virtualized the Vivalytic embedded Java application with Docker for better performance and easier testing.</li>
+                <li>Built Python GUI tools (Tkinter) for import, data analysis and error analysis of Vivalytic devices.</li>
+                <li>Software testing and evaluation of Vivalytic devices; first-level software contact for the logistics team.</li>
+              </ul>
+              <ul class="chips"><li>Java</li><li>Docker</li><li>Python</li><li>Tkinter</li></ul>
+            </div>
+          </li>
+
+          <li class="tl-item reveal">
+            <div class="tl-date">08.2016 – 03.2019</div>
+            <div class="tl-body">
+              <h3>Software Developer</h3>
+              <p class="org">Robert Bosch Engineering and Business Solutions (RBEI) · Bangalore, India</p>
+              <ul>
+                <li>Worked with clients on business use cases; trained and tested an indoor navigation model against them.</li>
+                <li>Backend developer: custom gateway with AAA and licensing (License4J) on the Spring framework.</li>
+                <li>Owner of 9 microservices across 3 projects (Spring Boot, MongoDB, Redis, Node.js), developed, tested and deployed to AWS single-handedly.</li>
+                <li>Admin web app in AngularJS, HTML5 and CSS3 for user, role and license management.</li>
+                <li>Highest SonarQube code coverage across projects with JUnit; CI/CD on Linux and Jenkins.</li>
+              </ul>
+              <ul class="chips"><li>Java</li><li>Spring Boot</li><li>MongoDB</li><li>AWS</li><li>Jenkins</li></ul>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ================= PROJECTS ================= -->
+    <section class="section alt" id="projects">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <span class="sec-no">04</span><h2>Projects</h2><span class="sec-trace"></span>
+        </header>
+        <div class="ic-grid">
+          <article class="ic reveal">
+            <span class="ic-id">U1 · MED</span>
+            <h3>Diabetic Retinopathy Detection</h3>
+            <p>Transfer learning in MATLAB across ResNet, VGG and GoogLeNet to detect diabetic retinopathy. C++ pre-processing lifted model accuracy from 65% to 74%.</p>
+            <ul class="chips"><li>C++</li><li>MATLAB</li><li>CNN</li><li>Transfer learning</li></ul>
+          </article>
+          <article class="ic reveal">
+            <span class="ic-id">U2 · MED</span>
+            <h3>Robotic Hospital Bed</h3>
+            <p>Bachelor thesis: a hospital bed with semi-autonomous navigation and integrated health sensors for real-time pulse and temperature monitoring.</p>
+            <ul class="chips"><li>Arduino Mega</li><li>Pulse oximeter</li><li>GSM</li></ul>
+          </article>
+          <article class="ic reveal">
+            <span class="ic-id">U3 · MED</span>
+            <h3>Compression Stocking Tracking</h3>
+            <p>Continuous measurement of compression intensity in a compression stocking, with feedback to the wearer and the broader care community.</p>
+            <ul class="chips"><li>React Native</li><li>Arduino</li><li>FSR sensors</li><li>Android</li></ul>
+          </article>
+          <article class="ic reveal">
+            <span class="ic-id">U4 · CV</span>
+            <h3>Firefighting Drone</h3>
+            <p>Simulation of a firefighting drone in ROS, with YOLO v3 trained for window and door detection.</p>
+            <ul class="chips"><li>ROS</li><li>Python</li><li>YOLO v3</li></ul>
+          </article>
+          <article class="ic reveal">
+            <span class="ic-id">U5 · AI</span>
+            <h3>Image Generation with GANs</h3>
+            <p>Trained generative adversarial networks to produce realistic images of cats and cars.</p>
+            <ul class="chips"><li>Python</li><li>GAN</li></ul>
+          </article>
+          <article class="ic reveal">
+            <span class="ic-id">U6 · CV</span>
+            <h3>Vision Coursework &amp; Experiments</h3>
+            <p>Image processing and computer vision projects with OpenCV, U-Net and transformer networks, in both C++ and Python.</p>
+            <ul class="chips"><li>OpenCV</li><li>U-Net</li><li>PyTorch</li><li>TensorFlow</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SKILLS ================= -->
+    <section class="section" id="skills">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <span class="sec-no">05</span><h2>Skills</h2><span class="sec-trace"></span>
+        </header>
+        <div class="skills-grid">
+          <div class="skill-card reveal">
+            <h3><span class="pin"></span>Imaging &amp; AI</h3>
+            <ul class="chips lg"><li>Medical image analysis</li><li>Computer vision</li><li>TensorFlow</li><li>Keras</li><li>PyTorch</li><li>OpenCV</li><li>PyRadiomics</li><li>MATLAB</li></ul>
+          </div>
+          <div class="skill-card reveal">
+            <h3><span class="pin"></span>Languages</h3>
+            <ul class="chips lg"><li>Python</li><li>C++</li><li>Java</li><li>JavaScript</li><li>Go</li><li>Lua</li><li>HTML5 / CSS3</li></ul>
+          </div>
+          <div class="skill-card reveal">
+            <h3><span class="pin"></span>Backend &amp; DevOps</h3>
+            <ul class="chips lg"><li>Spring Boot</li><li>Flask</li><li>MongoDB</li><li>Redis</li><li>Docker</li><li>Kong API Gateway</li><li>Keycloak</li><li>Jenkins</li><li>AWS</li></ul>
+          </div>
+          <div class="skill-card reveal">
+            <h3><span class="pin"></span>Platforms &amp; hardware</h3>
+            <ul class="chips lg"><li>Linux</li><li>Windows</li><li>Android</li><li>Arduino</li><li>Raspberry Pi</li><li>ROS</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= EDUCATION ================= -->
+    <section class="section alt" id="education">
+      <div class="wrap">
+        <header class="sec-head reveal">
+          <span class="sec-no">06</span><h2>Education</h2><span class="sec-trace"></span>
+        </header>
+        <div class="edu-grid">
+          <article class="edu reveal">
+            <p class="edu-date">2019 – 2023</p>
+            <h3>M.Sc. Electrical Engineering, Information Technology and Computer Engineering</h3>
+            <p class="org">RWTH Aachen University · Germany</p>
+            <p>Focus: computer vision, medical image analysis, deep learning.</p>
+          </article>
+          <article class="edu reveal">
+            <p class="edu-date">2012 – 2016</p>
+            <h3>B.E. Electronics and Communication Engineering</h3>
+            <p class="org">PESIT · Bangalore, India</p>
+            <p>Focus: microcontrollers, programming in C++ and Java, artificial neural networks.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CONTACT ================= -->
+    <section class="section contact" id="contact">
+      <div class="wrap">
+        <div class="contact-box reveal">
+          <span class="hud-corner tl"></span><span class="hud-corner tr"></span>
+          <span class="hud-corner bl"></span><span class="hud-corner br"></span>
+          <p class="eyebrow"><span class="led"></span> OPEN CHANNEL</p>
+          <h2>Let’s connect</h2>
+          <p>Interested in focused ultrasound, medical image analysis or research software? Send me a message.</p>
+
+          <!-- Contact form, delivered by Web3Forms (https://web3forms.com).
+               TODO: replace YOUR_ACCESS_KEY_HERE with your Web3Forms access key. -->
+          <form class="contact-form" id="contactForm" novalidate>
+            <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE">
+            <input type="hidden" name="subject" value="New message from your personal webpage">
+            <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <div class="field-row">
+              <label class="field">
+                <span>Name</span>
+                <input type="text" name="name" autocomplete="name" required maxlength="100">
+              </label>
+              <label class="field">
+                <span>Email</span>
+                <input type="email" name="email" autocomplete="email" required maxlength="200">
+              </label>
+            </div>
+            <label class="field">
+              <span>Message</span>
+              <textarea name="message" rows="5" required maxlength="5000"></textarea>
+            </label>
+            <div class="form-foot">
+              <button class="btn primary" type="submit" id="contactSubmit">Send message</button>
+              <p class="form-status" id="contactStatus" role="status" aria-live="polite"></p>
+            </div>
+          </form>
+
+          <p class="or-line"><span>or find me on</span></p>
+          <div class="hero-actions center">
+            <!-- TODO: replace with your LinkedIn profile URL -->
+            <a class="btn primary" href="https://www.linkedin.com/" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4v11H3zM9.5 9.75h3.8v1.6h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.76v5.59h-4v-4.96c0-1.18-.02-2.7-1.75-2.7-1.75 0-2.02 1.28-2.02 2.61v5.05h-4z"/></svg>
+              LinkedIn
+            </a>
+            <a class="btn ghost" href="https://github.com/guruhebbar2" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.27 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+              GitHub
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© <span id="year"></span> Guruprasad Hebbar Puthila</span>
+    <span class="dim mono">built with HTML · CSS · JS</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
