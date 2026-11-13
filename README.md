@@ -1,6 +1,6 @@
 # personal-webpage
 
-Personal resume site of Guruprasad Hebbar Puthila. Plain HTML, CSS and JavaScript: no build step.
+Personal resume site. Plain HTML, CSS and JavaScript: no build step.
 
 - `index.html`: all content (edit text here)
 - `styles.css`: theme and layout (colors are variables at the top)
